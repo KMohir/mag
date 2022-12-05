@@ -27,7 +27,7 @@ def categories_markup1():
     markup = InlineKeyboardMarkup(row_width=3)
     product=db.fetchall('''SELECT * FROM categori''')
 
-    for idx,title in product:
+    for idx,title,photo in product:
         markup.insert(InlineKeyboardButton(title, callback_data=category_cb.new(id=idx, action='view')))
     # cart=InlineKeyboardButton(text='🛒 Корзина', callback_data='Корзинка')
     # info=InlineKeyboardButton(text = 'Информация', url = 'https://www.youtube.com', callback_data='about')

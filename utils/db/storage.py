@@ -15,7 +15,7 @@ class DatabaseManager(object):
         self.query('CREATE TABLE IF NOT EXISTS orders (cid int, usr_name text, usr_address text, products text)')
         self.query('CREATE TABLE IF NOT EXISTS cart (cid int, idx text, quantity int)')
         self.query('CREATE TABLE IF NOT EXISTS categories (idx text, title text ,tag text)')
-        self.query('CREATE TABLE IF NOT EXISTS categori (idx text, title text)')
+        self.query('CREATE TABLE IF NOT EXISTS categori (idx text, title text,photo blob)')
         self.query('CREATE TABLE IF NOT EXISTS wallet (cid int, balance real)')
         self.query('CREATE TABLE IF NOT EXISTS questions (cid int, question text)')
 

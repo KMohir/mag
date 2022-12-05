@@ -64,22 +64,8 @@ async def user_menu(query: CallbackQuery):
 
 @dp.message_handler(IsUser(), commands='start')
 async def user_menu(message: Message):
-
-
-
-
-
-
-
-
-
     await message.answer('Выберите раздел, чтобы вывести список товаров:',
-                         reply_markup=categories_markup1())
+                            reply_markup=categories_markup1())
 
 
-    aioschedule.every().day.at("18:06").do(send_messange)
-    aioschedule.every().day.at("12:18").do(send_messange)
 
-    while True:
-        await aioschedule.run_pending()
-        await asyncio.sleep(1)

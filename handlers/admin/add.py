@@ -26,7 +26,7 @@ async def process_settings(message: Message):
 
     markup = InlineKeyboardMarkup()
 
-    for idx, title in db.fetchall('SELECT * FROM categori'):
+    for idx, title ,photo in db.fetchall('SELECT * FROM categori'):
 
         markup.add(InlineKeyboardButton(
             title, callback_data=category_cb.new(id=idx, action='view')))
@@ -60,19 +60,32 @@ async def category_callback_handler(query: CallbackQuery, callback_data: dict, s
 async def add_category_callback_handler(query: CallbackQuery):
     await query.message.delete()
     await query.message.answer('Название категории?')
-    await CategoryState.title.set()
-
-
+    await Categ.title.set()
 @dp.message_handler(IsAdmin(), state=CategoryState.title)
 async def set_category_title_handler(message: Message, state: FSMContext):
 
     category = message.text
     idx = md5(category.encode('utf-8')).hexdigest()
-    db.query('INSERT INTO categori VALUES (?, ?)', (idx, category))
 
+    async with state.proxy() as data:
+        data['title']=category
+        data['idx']=idx
+
+    await message.answer('Фото')
+    await Categ.photo.set()
+
+@dp.message_handler(IsAdmin(), content_types=ContentType.PHOTO, state=CategoryState.photo)
+async def process_image_photo(message: Message, state: FSMContext):
+
+    fileID = message.photo[-1].file_id
+    file_info = await bot.get_file(fileID)
+    downloaded_file = (await bot.download_file(file_info.file_path)).read()
+    async with state.proxy() as data:
+        idx=data['idx']
+        category=data['title']
+    db.query('INSERT INTO categori VALUES (?, ?,?)', (idx, category,downloaded_file))
+    await message.answer('Сохранено')
     await state.finish()
-    await process_settings(message)
-
 
 @dp.message_handler(IsAdmin(), text=delete_category)
 async def delete_category_handler(message: Message, state: FSMContext):
@@ -274,11 +287,11 @@ async def process_price(message: Message, state: FSMContext):
         await ProductState.next()
         text = f'<b>{title}</b>\n\n{body}\n\nЦена: {price} som.'
 
-        markup = check_markup()
+
 
         await message.answer_photo(photo=data['image'],
                                    caption=text,
-                                   reply_markup=markup)
+                                   )
 
 
 @dp.message_handler(IsAdmin(), lambda message: message.text not in [back_message, all_right_message], state=ProductState.confirm)

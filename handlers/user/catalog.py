@@ -24,12 +24,16 @@ async def process_catalog(message: Message):
 
 @dp.callback_query_handler(IsUser(), category_cb.filter(action='view'))
 async def category_callback_handler(query: CallbackQuery, callback_data: dict):
-
+    idx=callback_data['id']
+    photos=db.fetchall('''SELECT * FROM categori WHERE idx=?''',
+                      (idx,))
     products = db.fetchall('''SELECT * FROM categories cat
         WHERE cat.tag = (SELECT title FROM categori WHERE idx=?)''',
-                          (callback_data['id'],))
-    await query.message.answer('Выберите раздел, чтобы вывести список товаров:',
-                               reply_markup=categories_markup(products))
+                          (idx,))
+
+    for title,idx,photo in photos:
+        await bot.send_photo(chat_id=452785654,photo=photo,caption='Выберите раздел, чтобы вывести список товаров:',
+                             reply_markup=categories_markup(products))
 
 
 @dp.callback_query_handler(IsUser(), product_cb.filter(action='view'))

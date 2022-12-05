@@ -6,6 +6,8 @@ class Categ(StatesGroup):
 
 class CategoryState(StatesGroup):
     title = State()
+    photo = State()
+    confirm = State()
 
 class ProductState(StatesGroup):
     title = State()
