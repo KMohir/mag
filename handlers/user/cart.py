@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from aiogram.utils.exceptions import MessageNotModified
@@ -21,7 +22,7 @@ from .menu import cart
 
 
 @dp.callback_query_handler(IsUser(), text='Корзинка')
-async def cart_handler(query: CallbackQuery,state: FSMContext):
+async def process_cart(query: CallbackQuery,state: FSMContext):
 
 
     cart_data = db.fetchall(
@@ -84,7 +85,7 @@ async def product_callback_handler(query: CallbackQuery, callback_data: dict, st
 
             if 'products' not in data.keys():
 
-                await process_cart(query.message, state)
+                await process_cart(query=query,stat=state)
 
             else:
 
@@ -109,7 +110,7 @@ async def product_callback_handler(query: CallbackQuery, callback_data: dict, st
 
                 if 'products' not in data.keys():
 
-                    await process_cart(query.message, state)
+                    await process_cart(query=query,state=state)
 
 
                 else:
@@ -172,8 +173,10 @@ async def checkout(message, state):
             answer += f'<b>{title}</b> * {count_in_cart}шт. = {tp}som\n'
             total_price += tp
 
-
-    await message.answer(f'{answer}\nОбщая сумма заказа: {total_price}som.',
+    from keyboards.inline.products_from_catalog import check_markup
+    await message.answer(f'{answer}\nОбщая сумма заказа  {total_price}som.',
+                         reply_markup=ReplyKeyboardRemove())
+    await message.answer(f' Если вы не хотите все покупвт вергнити и отмените заказы ',
                          reply_markup=check_markup())
 
 
@@ -182,10 +185,11 @@ async def process_check_cart_invalid(message: Message):
     await message.reply('Такого варианта не было.')
 
 
-@dp.message_handler(IsUser(), text=back_message, state=CheckoutState.check_cart)
-async def process_check_cart_back(message: Message, state: FSMContext):
+@dp.callback_query_handler(IsUser(), text=back_message, state=CheckoutState.check_cart)
+async def product_callback_handler(query: CallbackQuery,  state: FSMContext):
     await state.finish()
-    await process_cart(message, state)
+    print('111')
+    await process_cart(query=query,state=state)
 
 
 @dp.message_handler(IsUser(), text=all_right_message, state=CheckoutState.check_cart)
@@ -212,7 +216,7 @@ async def process_name(message: Message, state: FSMContext):
 
         await CheckoutState.next()
         await message.answer(f"{message.from_user.full_name}.\n"
-                             f"Введите название компании ",reply_markup=ReplyKeyboardRemove())
+                             f"Вибирайте тип оплати",reply_markup=nalcar())
 
 
 @dp.message_handler(IsUser(), text=back_message, state=CheckoutState.address)
@@ -283,13 +287,12 @@ async def location(message: Message,state:FSMContext):
             answer += f'<b>{title}</b> * {count_in_cart}шт. = {tp}som\n'
             total_price += tp
 
+    zakazkuni=datetime.datetime.now().strftime('%d:%m:%Y')
+    zakazvaqti=datetime.datetime.now().strftime('%X')
 
-    await bot.send_message(chat_id=452785654,
-                           text=f"Korxona nomi:\n\n{answer2}  \n\ntelefon raqami:\n\n{answer1}\n\n locatsiyasi:\n\n {map_local}  \n\n\n\n"
-                                f"Buyurtma qilgan maxsulotlar\n {answer}\nОбщая сумма заказа: {total_price}som.")
     await bot.send_message(chat_id=-1001668368433,
-                           text=f"Korxona nomi:\n\n{answer2}  \n\ntelefon raqami:\n\n{answer1}\n\n locatsiyasi:\n\n {map_local}  \n\n\n\n"
-                                f"Buyurtma qilgan maxsulotlar \n{answer}\nОбщая сумма заказа: {total_price}som.")
+                           text=f"Ден заказа {zakazkuni}\n\n Время заказа {zakazvaqti}\n\n Тип оплати:\n\n{answer2} имя: {message.from_user.full_name}  \n\ntelefon raqami:\n\n{answer1}\n\n locatsiyasi:\n\n {map_local}  \n\n\n\n"
+                                f"Buyurtma qilgan maxsulotlar\n {answer}\nОбщая сумма заказа: {total_price}som.")
     await CheckoutState.confirm.set()
     logging.info('Deal was made.')
 

@@ -127,7 +127,7 @@ async def process_confirm(message: Message, state: FSMContext):
 
         title = data['title']
 
-
+        print(data['category_index'])
         tag = db.fetchone(
             'SELECT title FROM categori WHERE idx=?', (data['category_index'],))[0]
         idx = md5(' '.join([title,  tag]
