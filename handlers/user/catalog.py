@@ -1,7 +1,7 @@
 
 import logging
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
-from keyboards.inline.categories import categories_markup, category_cb, cat_cb, categories_markup1
+from keyboards.inline.categories import categories_markup, category_cb, cat_cb, categories_markup1, categories_markup11
 from keyboards.inline.products_from_catalog import product_markup, product_cb
 from aiogram.utils.callback_data import CallbackData
 from aiogram.types.chat import ChatActions
@@ -32,8 +32,9 @@ async def category_callback_handler(query: CallbackQuery, callback_data: dict):
                           (idx,))
 
     for title,idx,photo in photos:
-        await bot.send_photo(chat_id=452785654,photo=photo,caption='Выберите раздел, чтобы вывести список товаров:',
-                             reply_markup=categories_markup(products))
+        await bot.send_photo(chat_id=query.message.chat.id,photo=photo,   
+                             reply_markup=categories_markup(products)) 
+       
 
 
 @dp.callback_query_handler(IsUser(), product_cb.filter(action='view'))
@@ -52,19 +53,19 @@ async def category_callback_handler(query: CallbackQuery, callback_data: dict):
 
 @dp.callback_query_handler(IsUser(), product_cb.filter(action='add'))
 async def add_product_callback_handler(query: CallbackQuery, callback_data: dict):
-
+    
     db.query('INSERT INTO cart VALUES (?, ?, 1)',
-             (query.message.chat.id, callback_data['id']))
+            (query.message.chat.id, callback_data['id']))
 
     await query.answer('Товар добавлен в корзину!')
     await query.message.delete()
-
+    await query.message.answer('Товар добавили в корзинку', reply_markup=categories_markup11())
 
 async def show_products(m, products):
 
     if len(products) == 0:
 
-        await m.answer('Здесь ничего нет 😢')
+        await m.answer('Все продукты добавили в корзинку',reply_markup=categories_markup11()) 
 
     else:
 

@@ -168,7 +168,7 @@ async def category_callback_handler(query: CallbackQuery, callback_data: dict, s
     await query.message.delete()
     await query.answer('Все добавленные продукти в эту категорию.')
     await state.update_data(category_index=category_idx)
-    await show_products(query.message, products, category_idx)
+    await show_products(query.message, products)
 
 # add product
 

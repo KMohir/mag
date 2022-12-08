@@ -4,7 +4,7 @@ from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove, CallbackQuer
 from keyboards.default.markups import all_right_message, cancel_message, submit_markup
 from aiogram.types import Message
 
-from keyboards.inline.categories import categories_markup
+from keyboards.inline.categories import categories_markup, categories_markup1
 from states import SosState
 from filters import IsUser
 from loader import dp, db, bot
@@ -47,15 +47,21 @@ async def process_submit(message: Message, state: FSMContext):
         async with state.proxy() as data:
             db.query('INSERT INTO questions VALUES (?, ?)',
                      (cid, data['question']))
-
+        await state.finish()
         await message.answer('Отправлено!', reply_markup=ReplyKeyboardRemove())
+
         await message.answer('Выберите раздел, чтобы вывести список товаров:',
-                                   reply_markup=categories_markup())
+                                   reply_markup=categories_markup1())
+
 
     else:
 
         await message.answer('Превышен лимит на количество задаваемых вопросов.', reply_markup=ReplyKeyboardRemove())
         await message.answer('Выберите раздел, чтобы вывести список товаров:',
-                                   reply_markup=categories_markup())
+                                   reply_markup=categories_markup1())
+        await state.finish()
+
+
+
 
     await state.finish()

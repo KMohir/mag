@@ -10,16 +10,17 @@ cat_cb = CallbackData('categori', 'id', 'action')
 product_cb= CallbackData('product', 'id', 'action')
 
 def categories_markup(product):
-    markup = InlineKeyboardMarkup(row_width=3)
+    markup = InlineKeyboardMarkup(row_width=2)
     for idx, title, tag in product:
         markup.insert(InlineKeyboardButton(title, callback_data=product_cb.new(id=idx, action='view')))
-
+    back = InlineKeyboardButton(text='Назад', callback_data='home')
+    markup.add(back)
     # cart=InlineKeyboardButton(text='🛒 Корзина', callback_data='Корзинка')
     # info=InlineKeyboardButton(text = 'Информация', url = 'https://www.youtube.com', callback_data='about')
     # que=InlineKeyboardButton(text = '❓ Вопросы', callback_data='Вопросы')
     # de=InlineKeyboardButton(text = '🚚 Статус заказа', callback_data='Buyurtma holati')
-    markup.add(InlineKeyboardButton(text='🛒 Корзина', callback_data='Корзинка'),InlineKeyboardButton(text = 'Информация', url = 'https://www.youtube.com', callback_data='about'))
-    markup.add(InlineKeyboardButton(text = '❓ Вопросы', callback_data='Вопросы'),InlineKeyboardButton(text = '🚚 Статус заказа', callback_data='Buyurtma holati'))
+    # markup.add(InlineKeyboardButton(text='🛒 Корзина', callback_data='Корзинка'),InlineKeyboardButton(text = '❓ Вопросы', callback_data='Вопросы'))
+    # markup.add(InlineKeyboardButton(text = 'Информация', url = 'https://www.youtube.com', callback_data='about'),InlineKeyboardButton(text = '🚚 Статус заказа', callback_data='Buyurtma holati'))
     return markup
 def categories_markup1():
     global cat_cb
@@ -33,11 +34,20 @@ def categories_markup1():
     # info=InlineKeyboardButton(text = 'Информация', url = 'https://www.youtube.com', callback_data='about')
     # que=InlineKeyboardButton(text = '❓ Вопросы', callback_data='Вопросы')
     # de=InlineKeyboardButton(text = '🚚 Статус заказа', callback_data='Buyurtma holati')
-    markup.add(InlineKeyboardButton(text='🛒 Корзина', callback_data='Корзинка'),
-               InlineKeyboardButton(text='Информация', url='https://www.youtube.com', callback_data='about'))
-    markup.add(InlineKeyboardButton(text='❓ Вопросы', callback_data='Вопросы'),
-               InlineKeyboardButton(text='🚚 Статус заказа', callback_data='Buyurtma holati'))
+    markup.row(InlineKeyboardButton(text = '❓ Вопросы', callback_data='Вопросы'),InlineKeyboardButton(text = 'Номер заказа', callback_data='Buyurtma holati'))
     return markup
+
+    return markup
+
+def categories_markup11():
+    global cat_cb
+
+    markup = InlineKeyboardMarkup(row_width=1)
+
+
+    markup.add(InlineKeyboardButton(text='🛒 Корзинка', callback_data='Корзинка'))
+    return markup
+
 
 async def show_products(m, products):
 
